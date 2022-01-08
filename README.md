@@ -1,4 +1,4 @@
-![Testing](https://github.com/hbiede/Ranked-Choice-Voting/actions/workflows/test.yml/badge.svg)
+[![Test and Lint](https://github.com/hbiede/Ranked-Choice-Voting/actions/workflows/test.yaml/badge.svg)](https://github.com/hbiede/Ranked-Choice-Voting/actions/workflows/test.yaml)
 [![codecov](https://codecov.io/gh/hbiede/Rank-Choice-Voting/graph/badge.svg)](https://codecov.io/gh/hbiede/Rank-Choice-Voting)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
 
