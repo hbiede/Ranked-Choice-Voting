@@ -1,5 +1,5 @@
 [![Test and Lint](https://github.com/hbiede/Ranked-Choice-Voting/actions/workflows/test.yaml/badge.svg)](https://github.com/hbiede/Ranked-Choice-Voting/actions/workflows/test.yaml)
-[![codecov](https://codecov.io/gh/hbiede/Rank-Choice-Voting/graph/badge.svg)](https://codecov.io/gh/hbiede/Rank-Choice-Voting)
+[![codecov](https://codecov.io/gh/hbiede/Ranked-Choice-Voting/graph/badge.svg)](https://codecov.io/gh/hbiede/Rank-Choice-Voting)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
 
 # Rank-Choice-Voting
@@ -13,7 +13,7 @@ A Ruby tool to calculate the winner in a ranked choice voting election
 
 ### Installation
 ```
-git clone https://github.com/hbiede/Voter-Tokens.git
+git clone https://github.com/hbiede/Ranked-Choice-Voting.git
 cd Voter-Tokens
 ```
 
