@@ -6,7 +6,10 @@
 require_relative '../vote_parser'
 require_relative './helper'
 
-#noinspection RubyResolve
+# rubocop:disable Metrics/ClassLength
+# rubocop:disable Metrics/MethodLength
+
+# noinspection RubyResolve
 class TestVoteParser < Test::Unit::TestCase
   def test_vote_arg_count_validator
     assert_nothing_raised do
@@ -39,7 +42,7 @@ class TestVoteParser < Test::Unit::TestCase
                    %w[1 2 3 4],
                    %w[3 4 1 2],
                    ['', '', '1', '2'],
-                   ['1', '', '', ''],
+                   ['1', '', '', '']
                  ], VoteParser.read_votes(file))
 
     File.delete file
@@ -72,25 +75,31 @@ class TestVoteParser < Test::Unit::TestCase
   end
 
   def test_remove_candidate
-    assert_equal([%w[B], %w[C B], %w[D B C], %w[B C]], VoteParser.remove_candidate([%w[B], %w[C B A], %w[A], %w[D B C], %w[A B C]], 'A'))
-    assert_equal([%w[B], %w[C B A], %w[A], %w[D B C], %w[A B C]], VoteParser.remove_candidate([%w[B], %w[C B A], %w[A], %w[D B C], %w[A B C]], nil))
-    assert_equal([%w[C A], %w[A], %w[D C], %w[A C]], VoteParser.remove_candidate([%w[B], %w[C B A], %w[A], %w[D B C], %w[A B C]], 'B'))
+    assert_equal([%w[B], %w[C B], %w[D B C], %w[B C]],
+                 VoteParser.remove_candidate([%w[B], %w[C B A], %w[A], %w[D B C], %w[A B C]], 'A'))
+    assert_equal([%w[B], %w[C B A], %w[A], %w[D B C], %w[A B C]],
+                 VoteParser.remove_candidate([%w[B], %w[C B A], %w[A], %w[D B C], %w[A B C]], nil))
+    assert_equal([%w[C A], %w[A], %w[D C], %w[A C]],
+                 VoteParser.remove_candidate([%w[B], %w[C B A], %w[A], %w[D B C], %w[A B C]], 'B'))
     assert_equal([%w[D]],
                  VoteParser.remove_candidate(
                    VoteParser.remove_candidate(
                      VoteParser.remove_candidate(
                        [%w[B], %w[C B A], %w[A], %w[D B C], %w[A B C]],
-                       'A'),
-                     'B'),
-                   'C')
-    )
+                       'A'
+                     ),
+                     'B'
+                   ),
+                   'C'
+                 ))
     assert_equal([], VoteParser.remove_candidate([%w[A]], 'A'))
   end
 
   def test_get_vote_count
     assert_equal({ 'A' => 1 }, VoteParser.get_vote_count([%w[A]]))
     assert_equal({ 'A' => 5 }, VoteParser.get_vote_count([%w[A], %w[A B C], %w[A D B], %w[A C B D], %w[A]]))
-    assert_equal({ 'A' => 3, 'B' => 1, 'C' => 2, 'D' => 1 }, VoteParser.get_vote_count([%w[A], %w[B A C], %w[A D B], %w[C D], %w[A], %w[D], %w[C D B]]))
+    assert_equal({ 'A' => 3, 'B' => 1, 'C' => 2, 'D' => 1 },
+                 VoteParser.get_vote_count([%w[A], %w[B A C], %w[A D B], %w[C D], %w[A], %w[D], %w[C D B]]))
   end
 
   def test_get_winner
@@ -195,3 +204,5 @@ class TestVoteParser < Test::Unit::TestCase
     File.delete file
   end
 end
+# rubocop:enable Metrics/ClassLength
+# rubocop:enable Metrics/MethodLength
