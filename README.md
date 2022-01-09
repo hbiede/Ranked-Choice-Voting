@@ -37,7 +37,7 @@ ruby vote_parser.rb data/votes.csv
 If your ballots are stored on the first sheet of a Google Sheet in range B1:G, you can
 download and parse votes all in one command:
 ```
-make URL=https://docs.google.com/spreadsheets/d/DOCUMENT_ID/export?exportFormat=csv&range=B1:G
+make URL="https://docs.google.com/spreadsheets/d/DOCUMENT_ID/export?exportFormat=csv&range=B1:G"
 ```
 **Note: you must change DOCUMENT_ID to the alphanumeric code in the link to your Google
 Sheet. The Sheet *must* be set as viewable by anyone with the link.**
