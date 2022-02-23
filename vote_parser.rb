@@ -72,7 +72,8 @@ class VoteParser
     trim_empty_voters(filtered)
   end
 
-  # Gets a vote count per candidate
+  # Gets a vote count per candidate. Small decimals are added to account
+  # for ties in run-offs
   #
   # @param [Array<Array<String>>] vote_records Current vote records
   # @return [Hash{String=>Integer}] The vote count per candidate
@@ -81,6 +82,9 @@ class VoteParser
     vote_count = Hash.new(0)
     vote_records.each do |vote|
       vote_count[vote[0]] += 1
+      vote_count[vote[1]] += 0.001 if vote.length > 1
+      vote_count[vote[1]] += 0.0001 if vote.length > 2
+      vote_count[vote[1]] += 0.00001 if vote.length > 3
     end
     vote_count
   end
@@ -95,6 +99,7 @@ class VoteParser
   end
 
   # Gets the name of the candidate who received the lowest vote count
+  # Ties are broken by number of seconds, thirds, and fourths
   #
   # @param counts [Hash{String=>Integer}] The vote count per candidate
   # @param candidates [Array<String>] The list of candidates
@@ -128,11 +133,11 @@ class VoteParser
   # @param winner [String, NilClass] The winner, if one exists
   # @return [String] The report
   def self.election_report(counts, winner, candidates)
-    format("%<Report>s\n%<Result>s\n\n",
+    format("%<Report>s\n-----\n%<Result>s",
            {
              Report: get_count_report(counts, candidates),
              Result: if winner.nil?
-                       format('%s eliminated', get_eliminated_candidate(counts, candidates))
+                       format("%s eliminated\n\n\n", get_eliminated_candidate(counts, candidates))
                      else
                        format('%s won!', winner)
                      end
@@ -148,6 +153,7 @@ class VoteParser
     counts = get_vote_count(vote_records)
     winner = get_winner(counts)
     puts election_report(counts, winner, candidates)
+    # Winner found
     return [winner, vote_records, candidates] unless winner.nil?
 
     # No winner, eliminate a candidate
