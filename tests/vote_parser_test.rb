@@ -97,7 +97,10 @@ class TestVoteParser < Test::Unit::TestCase
 
   def test_get_vote_count
     assert_equal({ 'A' => 1 }, VoteParser.get_vote_count([%w[A]]))
-    assert_equal({ 'A' => 5, 'B' => 0.12, 'C' => 0.11, 'D' => 0.101 }, VoteParser.get_vote_count([%w[A], %w[A B C], %w[A D B], %w[A C B D], %w[A]]))
+    assert_equal(
+      { 'A' => 5, 'B' => 0.12, 'C' => 0.11, 'D' => 0.101 },
+      VoteParser.get_vote_count([%w[A], %w[A B C], %w[A D B], %w[A C B D], %w[A]])
+    )
     assert_equal({ 'A' => 3.1, 'B' => 1.02, 'C' => 2.01, 'D' => 1.3 },
                  VoteParser.get_vote_count([%w[A], %w[B A C], %w[A D B], %w[C D], %w[A], %w[D], %w[C D B]]))
   end
@@ -127,9 +130,10 @@ class TestVoteParser < Test::Unit::TestCase
     assert_equal('s', VoteParser.get_plural(0.99999))
     assert_equal('s', VoteParser.get_plural(2))
     assert_equal('s', VoteParser.get_plural(10))
-    assert_equal('s', VoteParser.get_plural(10_000_000))
     assert_equal('s', VoteParser.get_plural(99_999_999))
+  end
 
+  def test_get_plural_false
     # Non-plural
     assert_equal('', VoteParser.get_plural(1))
     assert_equal('', VoteParser.get_plural(1.0))
