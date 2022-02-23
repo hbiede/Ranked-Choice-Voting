@@ -97,8 +97,8 @@ class TestVoteParser < Test::Unit::TestCase
 
   def test_get_vote_count
     assert_equal({ 'A' => 1 }, VoteParser.get_vote_count([%w[A]]))
-    assert_equal({ 'A' => 5 }, VoteParser.get_vote_count([%w[A], %w[A B C], %w[A D B], %w[A C B D], %w[A]]))
-    assert_equal({ 'A' => 3, 'B' => 1, 'C' => 2, 'D' => 1 },
+    assert_equal({ 'A' => 5, 'B' => 0.12, 'C' => 0.11, 'D' => 0.101 }, VoteParser.get_vote_count([%w[A], %w[A B C], %w[A D B], %w[A C B D], %w[A]]))
+    assert_equal({ 'A' => 3.1, 'B' => 1.02, 'C' => 2.01, 'D' => 1.3 },
                  VoteParser.get_vote_count([%w[A], %w[B A C], %w[A D B], %w[C D], %w[A], %w[D], %w[C D B]]))
   end
 
@@ -121,26 +121,46 @@ class TestVoteParser < Test::Unit::TestCase
     assert_equal(nil, VoteParser.get_eliminated_candidate({ 'A' => 3, 'C' => 2 }, []))
   end
 
+  def test_get_plural
+    # Plural
+    assert_equal('s', VoteParser.get_plural(0))
+    assert_equal('s', VoteParser.get_plural(0.99999))
+    assert_equal('s', VoteParser.get_plural(2))
+    assert_equal('s', VoteParser.get_plural(10))
+    assert_equal('s', VoteParser.get_plural(10_000_000))
+    assert_equal('s', VoteParser.get_plural(99_999_999))
+
+    # Non-plural
+    assert_equal('', VoteParser.get_plural(1))
+    assert_equal('', VoteParser.get_plural(1.0))
+    assert_equal('', VoteParser.get_plural(1.000001))
+    assert_equal('', VoteParser.get_plural(1.999999999))
+  end
+
   def test_election_report
     assert_equal(
-      'A: 5 votes\nC: 1 vote\nA won!\n\n',
-      VoteParser.election_report({ 'A' => 5, 'C' => 1 }, 'A', %w[A C])
+      "A: 5 votes\nC: 1 vote\n-----\nA won!",
+      VoteParser.election_report({ 'A' => 5, 'C' => 1.01 }, 'A', %w[A C])
     )
     assert_equal(
-      'A: 5 votes\nB: 3 votes\nC: 1 vote\nA won!\n\n',
-      VoteParser.election_report({ 'A' => 5, 'B' => 3, 'C' => 1 }, 'A', %w[A B C])
+      "A: 5 votes\nB: 3 votes\nC: 1 vote\n-----\nA won!",
+      VoteParser.election_report({ 'A' => 5.1, 'B' => 3, 'C' => 1 }, 'A', %w[A B C])
     )
     assert_equal(
-      'A: 5 votes\nB: 3 votes\nC: 1 vote\nD: 0 votes\nA won!\n\n',
-      VoteParser.election_report({ 'A' => 5, 'B' => 3, 'C' => 1 }, 'A', %w[A B C D])
+      "A: 5 votes\nB: 3 votes\nC: 1 vote\nD: 0 votes\n-----\nA won!",
+      VoteParser.election_report({ 'A' => 5, 'B' => 3.3, 'C' => 1 }, 'A', %w[A B C D])
     )
     assert_equal(
-      'A: 4 votes\nB: 3 votes\nC: 1 vote\nD: 0 votes\nD eliminated\n\n',
+      "A: 4 votes\nB: 3 votes\nC: 1 vote\nD: 0 votes\n-----\nD eliminated\n\n\n",
       VoteParser.election_report({ 'A' => 4, 'B' => 3, 'C' => 1 }, nil, %w[A B C D])
     )
     assert_equal(
-      'B: 1 vote\nA: 0 votes\nA eliminated\n\n',
+      "B: 1 vote\nA: 0 votes\n-----\nA eliminated\n\n\n",
       VoteParser.election_report({ 'B' => 1 }, nil, %w[A B])
+    )
+    assert_equal(
+      "A: 1 vote\nB: 1 vote\nC: 1 vote\n-----\nC eliminated\n\n\n",
+      VoteParser.election_report({ 'A' => 1.2, 'B' => 1.1, 'C' => 1 }, nil, %w[A B C])
     )
   end
 

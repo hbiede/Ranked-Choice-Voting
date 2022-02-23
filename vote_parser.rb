@@ -76,22 +76,21 @@ class VoteParser
   # for ties in run-offs
   #
   # @param [Array<Array<String>>] vote_records Current vote records
-  # @return [Hash{String=>Integer}] The vote count per candidate
+  # @return [Hash{String=>Integer,Float}] The vote count per candidate
   def self.get_vote_count(vote_records)
-    # @type [Hash{String=>Integer}]
+    # @type [Hash{String=>Integer,Float}]
     vote_count = Hash.new(0)
     vote_records.each do |vote|
-      vote_count[vote[0]] += 1
-      vote_count[vote[1]] += 0.001 if vote.length > 1
-      vote_count[vote[1]] += 0.0001 if vote.length > 2
-      vote_count[vote[1]] += 0.00001 if vote.length > 3
+      vote.each_with_index do |c, i|
+        vote_count[c] += 10**-i
+      end
     end
     vote_count
   end
 
   # Gets the name of the winner of the election for this round, if one exists
   #
-  # @param counts [Hash{String=>Integer}] The vote count per candidate
+  # @param counts [Hash{String=>Integer,Float}] The vote count per candidate
   # @return [String] The name of the winning candidate iff one exists
   # @return [NilClass] Nil if there is not a winning candidate
   def self.get_winner(counts)
@@ -101,7 +100,7 @@ class VoteParser
   # Gets the name of the candidate who received the lowest vote count
   # Ties are broken by number of seconds, thirds, and fourths
   #
-  # @param counts [Hash{String=>Integer}] The vote count per candidate
+  # @param counts [Hash{String=>Integer,Float}] The vote count per candidate
   # @param candidates [Array<String>] The list of candidates
   # @return [String] The lowest vote-earning candidate
   # @return [NilClass] If no candidates or no count are provided
@@ -113,23 +112,32 @@ class VoteParser
       .min(1) { |a, b| a[1] <=> b[1] }[0][0]
   end
 
+  # Returns the pluralization for a given count
+  # For the purposes of this function, the range [1,2) is treated as non-plural
+  #
+  # @param count [Integer,Float,NilClass]
+  # @return [String] 's' or ''
+  def self.get_plural(count)
+    !count.nil? && count >= 1 && count < 2 ? '' : 's'
+  end
+
   # Generates an round report string for the vote counts
   #
-  # @param counts [Hash{String=>Integer}] The vote count per candidate
+  # @param counts [Hash{String=>Integer,Float}] The vote count per candidate
   # @return [String] The report
   def self.get_count_report(counts, candidates)
     candidates
       .sort_by { |c| -1 * (counts[c].nil? ? 0 : counts[c]) }
       .map do |c|
         format('%<Name>s: %<Count>d vote%<Plural>s',
-               { Name: c, Count: counts[c].nil? ? 0 : counts[c], Plural: counts[c] == 1 ? '' : 's' })
+               { Name: c, Count: counts[c].nil? ? 0 : counts[c], Plural: get_plural(counts[c]) })
       end
       .join "\n"
   end
 
   # Generates an round report string
   #
-  # @param counts [Hash{String=>Integer}] The vote count per candidate
+  # @param counts [Hash{String=>Integer,Float}] The vote count per candidate
   # @param winner [String, NilClass] The winner, if one exists
   # @return [String] The report
   def self.election_report(counts, winner, candidates)
@@ -187,4 +195,6 @@ class VoteParser
   end
 end
 
+# :nocov:
 VoteParser.process_election ARGV if __FILE__ == $PROGRAM_NAME
+# :nocov:

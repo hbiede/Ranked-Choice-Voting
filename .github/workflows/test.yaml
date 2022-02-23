@@ -10,12 +10,17 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        ruby-version: [ '3.0', '2.7' ]
+
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Ruby
+      - name: Set up Ruby ${{ matrix.ruby-version }}
         uses: ruby/setup-ruby@477b21f02be01bcb8030d50f37cfec92bfa615b6
         with:
-          ruby-version: 2.7.3
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
       - name: Install dependencies
         run: bundle install
         shell: bash
